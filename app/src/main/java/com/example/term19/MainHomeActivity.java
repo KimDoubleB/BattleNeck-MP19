@@ -1,7 +1,6 @@
 package com.example.term19;
 
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,8 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -22,16 +19,23 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class MainHomeActivity extends AppCompatActivity {
     private TextView tv_roll;
 
     public TextView rank;
+    public HashMap<String, Integer> id_score; // rank sort data
 
     /*Used for Accelometer & Gyroscoper*/
     private SensorManager mSensorManager = null;
-    private UserSensorListner userSensorListner;
+    private UserSensorListener userSensorListner;
     private Sensor mGyroscopeSensor = null;
     private Sensor mAccelerometer = null;
 
@@ -63,7 +67,7 @@ public class MainHomeActivity extends AppCompatActivity {
         // Tab 1
         tv_roll = findViewById(R.id.tv_roll);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        userSensorListner = new UserSensorListner();
+        userSensorListner = new UserSensorListener();
         mGyroscopeSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
@@ -106,6 +110,8 @@ public class MainHomeActivity extends AppCompatActivity {
 
     // Tab view 2 function
     public void setRanking() {
+        id_score = new HashMap<>();
+
         // Get a reference to our posts
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("id_list/");
@@ -114,6 +120,8 @@ public class MainHomeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 // All data in Firebase DB
+
+                String dataID, dataScore;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     HashMap<String, Object> data = (HashMap<String, Object>) snapshot.getValue();
                     /*
@@ -124,14 +132,20 @@ public class MainHomeActivity extends AppCompatActivity {
                     //    this.score = score;
                     */
 
-                    String dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
-                    String dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
-                    Log.d("Message", dataID + " " + dataScore);
+                    dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
+                    dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
 
-                    rank.setText(rank.getText() + dataID + " : " + dataScore + '\n');
-
-
+                    id_score.put(dataID, Integer.parseInt(dataScore));
                 }
+                Log.d("Message2", id_score.toString());
+                Iterator it = sortByValue(id_score).iterator(); // sort by value
+                while(it.hasNext()) {
+                    dataID  = (String) it.next();
+                    Log.d("Message2", "RANK " + dataID + " = " + id_score.get(dataID));
+                    rank.setText(rank.getText() + dataID + " : " + id_score.get(dataID) + '\n');
+                }
+
+
             }
 
             @Override
@@ -180,7 +194,7 @@ public class MainHomeActivity extends AppCompatActivity {
 
     }
 
-    public class UserSensorListner implements SensorEventListener {
+    public class UserSensorListener implements SensorEventListener {
 
         @Override
         public void onSensorChanged(SensorEvent event) {
@@ -225,6 +239,23 @@ public class MainHomeActivity extends AppCompatActivity {
 
     public void onBackPressed() {
         finish();
+    }
+
+    // sort function by value
+    public static List sortByValue(final Map map) {
+
+        List<String> list = new ArrayList();
+
+        list.addAll(map.keySet());
+        Collections.sort(list,new Comparator() {
+            public int compare(Object o1,Object o2) {
+                Object v1 = map.get(o1);
+                Object v2 = map.get(o2);
+                return ((Comparable) v2).compareTo(v1);
+            }
+        });
+        Collections.reverse(list); // 주석시 오름차순
+        return list;
     }
 
 }
