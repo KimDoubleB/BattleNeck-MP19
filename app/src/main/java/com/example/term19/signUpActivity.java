@@ -33,6 +33,8 @@ public class signUpActivity extends Activity {
 
     //확인 버튼 클릭
     public void mOnClose(View v) {
+
+        // check the empty or incorrect data
         if (idText.getText().toString().isEmpty()
                 || pwText.getText().toString().isEmpty()
                 || ageText.getText().toString().isEmpty()
@@ -52,6 +54,7 @@ public class signUpActivity extends Activity {
             int score = 0;
             FirebasePost data = new FirebasePost(id, pw, age, gender,score);
 
+            // input the data to database of firebase
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference myRef = database.getReference("id_list/" + id);
             myRef.setValue(data.toMap());

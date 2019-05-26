@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class signInActivity extends Activity {
@@ -26,6 +27,7 @@ public class signInActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //타이틀바 없애기
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_sign_in);
@@ -45,12 +47,9 @@ public class signInActivity extends Activity {
         //액티비티(팝업) 닫기
         // finish();
     }
-
-
     //확인 버튼 클릭
     public void mOnClose(View v) {
         //데이터 전달하기
-        boolean isOK = true;
         final String id = idText.getText().toString();
         final String pw = pwText.getText().toString();
 
