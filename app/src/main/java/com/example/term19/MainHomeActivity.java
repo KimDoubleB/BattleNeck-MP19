@@ -1,6 +1,7 @@
 package com.example.term19;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,6 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -30,7 +34,7 @@ import java.util.Map;
 public class MainHomeActivity extends AppCompatActivity {
     private TextView tv_roll;
 
-    public TextView rank;
+    public ListView listview;
     public HashMap<String, Integer> id_score; // rank sort data
 
     /*Used for Accelometer & Gyroscoper*/
@@ -61,7 +65,7 @@ public class MainHomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_home);
 
         // Tab 2
-        rank = findViewById(R.id.ranking);
+        listview = findViewById(R.id.listview);
         setRanking();
 
         // Tab 1
@@ -139,11 +143,27 @@ public class MainHomeActivity extends AppCompatActivity {
                 }
                 Log.d("Message2", id_score.toString());
                 Iterator it = sortByValue(id_score).iterator(); // sort by value
+
+                // ArrayAdapter for listview
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1){
+                    // set text color of listview
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent){
+                        View view = super.getView(position, convertView, parent);
+                        TextView tv = view.findViewById(android.R.id.text1);
+                        tv.setTextColor(Color.parseColor("#00D85A"));
+                        return view;
+                    }
+                };
+
                 while(it.hasNext()) {
                     dataID  = (String) it.next();
                     Log.d("Message2", "RANK " + dataID + " = " + id_score.get(dataID));
-                    rank.setText(rank.getText() + dataID + " : " + id_score.get(dataID) + '\n');
+                    String rankData = dataID + " " + id_score.get(dataID);
+                    adapter.add(rankData);
                 }
+
+                listview.setAdapter(adapter);
 
 
             }
@@ -254,7 +274,7 @@ public class MainHomeActivity extends AppCompatActivity {
                 return ((Comparable) v2).compareTo(v1);
             }
         });
-        Collections.reverse(list); // 주석시 오름차순
+//        Collections.reverse(list); // 주석시 오름차순
         return list;
     }
 

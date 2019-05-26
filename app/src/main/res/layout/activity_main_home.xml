@@ -62,14 +62,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-
-                    <TextView
+                    <ListView
+                        android:id="@+id/listview"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/ranking"
-                        android:textSize="35dp"
                         android:background="#000000"
-                        android:textColor="#00D85A"/>
+                        android:focusable="false"
+                        android:clickable="false"
+                        ></ListView>
 
                 </LinearLayout>
             </FrameLayout>
