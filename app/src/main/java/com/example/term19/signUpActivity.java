@@ -1,15 +1,23 @@
 package com.example.term19;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 public class signUpActivity extends Activity {
     EditText idText, pwText, genderText, ageText;
@@ -54,13 +62,12 @@ public class signUpActivity extends Activity {
             int score = 0;
             FirebasePost data = new FirebasePost(id, pw, age, gender,score);
 
-            // input the data to database of firebase
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("id_list/" + id);
-            myRef.setValue(data.toMap());
-
-            //액티비티(팝업) 닫기
-            finish();
+            if(!data.addDataFirebase()){
+                //액티비티(팝업) 닫기
+                finish();
+            }else{
+                Toast.makeText(getApplicationContext(), "ID is duplicated !", Toast.LENGTH_SHORT).show();
+            }
 
         }
     }
