@@ -1,21 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="#000000">
-
-   <Button
-       android:layout_width="wrap_content"
+    android:background="@drawable/home"
+    tools:context=".MainActivity">
+   <RelativeLayout
+       android:layout_width="fill_parent"
        android:layout_height="wrap_content"
-       android:text="Sign in"
-       android:textColor="@color/colorAccent"
-       android:textSize="70dp"
-       android:id="@+id/btnLogin"
-       android:layout_centerHorizontal="true"
-       android:layout_centerVertical="true"
-       />
+       android:layout_gravity="center"
+       android:orientation="vertical"
+       android:paddingLeft="20dp"
+       android:paddingRight="20dp" >
 
-</RelativeLayout>
+      <EditText
+          android:id="@+id/id"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="10dp"
+          android:hint="ID"
+          android:inputType="textEmailAddress"
+          android:padding="10dp"
+          android:background="#DDF4DC"
+          android:singleLine="true"
+          android:textColor="@color/input_login"
+          android:textColorHint="@color/input_login_hint"
+          android:layout_centerHorizontal="true"
+          android:layout_above="@+id/pw"
+          android:alpha="0.7"/>
+
+      <EditText
+          android:id="@+id/pw"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="10dp"
+          android:hint="Password"
+          android:background="#DDF4DC"
+          android:inputType="textPassword"
+          android:padding="10dp"
+          android:singleLine="true"
+          android:textColor="@color/input_login"
+          android:textColorHint="@color/input_login_hint"
+          android:layout_centerHorizontal="true"
+          android:layout_above="@+id/btnLogin"
+          android:alpha="0.7"/>
+
+      <!-- Login Button -->
+
+      <Button
+          android:id="@+id/btnLogin"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="10dp"
+          android:text="LOGIN"
+          android:textColor="#fff"
+          android:onClick="Login"
+          android:layout_above="@+id/signUp"
+          android:layout_centerHorizontal="true"/>
+
+      <!-- Link to Sign Up Screen -->
+
+      <Button
+          android:id="@+id/signUp"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="15dp"
+          android:paddingBottom="50dp"
+          android:background="@null"
+          android:text="Not a member? Sign up now."
+          android:textAllCaps="false"
+          android:textColor="@color/white"
+          android:textSize="15dp"
+          android:layout_alignParentBottom="true"
+          android:layout_centerHorizontal="true"/>
+   </RelativeLayout>
+
+</LinearLayout>

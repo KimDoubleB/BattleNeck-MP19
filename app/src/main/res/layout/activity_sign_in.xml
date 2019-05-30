@@ -19,7 +19,8 @@
             android:gravity="center"
             android:background="#fd4381"
             android:layout_width="match_parent"
-            android:layout_height="53dp" />
+            android:layout_height="53dp"
+            />
     </LinearLayout>
     <!-- //end 타이틀바 -->
 
