@@ -1,9 +1,17 @@
 package com.example.term19;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,14 +42,39 @@ public class FirebasePost {
         this.gender = gender;
         this.score = score;
     }
+
+    public static void readDataFirebase(){
+
+        // 중복제거를하려고 이렇게 했는데 안된다....
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("id_list/");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // All data in Firebase DB
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    // Extract ID and PW
+                    String dataID = ((HashMap<String, Object>)snapshot.getValue()).get("id").toString();
+                    idList.add(dataID);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+    }
+
     public boolean addDataFirebase(){
         if(idList.contains(id)){
             return false; // duplicated ID
         }
 
-        idList.add(id);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("id_list/" + this.id);
+        Log.d("Message2", idList.toString());
         myRef.setValue(this.toMap());
         return true;
     }

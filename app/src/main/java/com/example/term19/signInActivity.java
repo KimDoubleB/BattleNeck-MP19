@@ -48,7 +48,7 @@ public class signInActivity extends Activity {
         // finish();
     }
     //확인 버튼 클릭
-    public void mOnClose(View v) {
+    public void Login(View v) {
         //데이터 전달하기
         final String id = idText.getText().toString();
         final String pw = pwText.getText().toString();

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -21,7 +22,7 @@ import java.util.HashMap;
 
 public class signUpActivity extends Activity {
     EditText idText, pwText, genderText, ageText;
-
+    Button OkBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,42 +36,52 @@ public class signUpActivity extends Activity {
         pwText = findViewById(R.id.pw);
         genderText = findViewById(R.id.gender);
         ageText = findViewById(R.id.age);
+        OkBtn = findViewById(R.id.okButton);
 
-    }
+        OkBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                // check the empty or incorrect data
+                if (idText.getText().toString().isEmpty()
+                        || pwText.getText().toString().isEmpty()
+                        || ageText.getText().toString().isEmpty()
+                        || genderText.getText().toString().isEmpty()
+                ) {
+                    Toast.makeText(getApplicationContext(), "Enter the correct information !", Toast.LENGTH_SHORT).show();
+                }
+                else if(!isInteger(ageText.getText().toString())){
+                    Toast.makeText(getApplicationContext(), "Enter the correct information !", Toast.LENGTH_SHORT).show();
+                }
+                else {
 
+                    String id = idText.getText().toString();
+                    String pw = pwText.getText().toString();
+                    int age = Integer.parseInt(ageText.getText().toString());
+                    String gender = genderText.getText().toString();
+                    int score = 0;
 
-    //확인 버튼 클릭
-    public void mOnClose(View v) {
+                    FirebasePost data = new FirebasePost(id, pw, age, gender,score);
+                    FirebasePost.readDataFirebase();
 
-        // check the empty or incorrect data
-        if (idText.getText().toString().isEmpty()
-                || pwText.getText().toString().isEmpty()
-                || ageText.getText().toString().isEmpty()
-                || genderText.getText().toString().isEmpty()
-        ) {
-            Toast.makeText(getApplicationContext(), "Enter the correct information !", Toast.LENGTH_SHORT).show();
-        }
-        else if(!isInteger(ageText.getText().toString())){
-            Toast.makeText(getApplicationContext(), "Enter the correct information !", Toast.LENGTH_SHORT).show();
-        }
-        else {
+                    // 중복제거하려했는데 안됨...
+                    data.addDataFirebase();
+                    finish();
 
-            String id = idText.getText().toString();
-            String pw = pwText.getText().toString();
-            int age = Integer.parseInt(ageText.getText().toString());
-            String gender = genderText.getText().toString();
-            int score = 0;
-            FirebasePost data = new FirebasePost(id, pw, age, gender,score);
+                    //
+//                    if(!data.addDataFirebase()){
+//                        //액티비티(팝업) 닫기
+//                        finish();
+//                    }else{
+//                        Toast.makeText(getApplicationContext(), "ID is duplicated !", Toast.LENGTH_SHORT).show();
+//                    }
 
-            if(!data.addDataFirebase()){
-                //액티비티(팝업) 닫기
-                finish();
-            }else{
-                Toast.makeText(getApplicationContext(), "ID is duplicated !", Toast.LENGTH_SHORT).show();
+                }
             }
+        });
 
-        }
+
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

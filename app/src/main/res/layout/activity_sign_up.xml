@@ -110,13 +110,13 @@
         android:layout_height="wrap_content">
         <Button
             android:text="확인"
+            android:id="@+id/okButton"
             android:textSize="15sp"
             android:textColor="#00D4FF"
             android:padding="16dp"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="53dp"
-            android:onClick="mOnClose"
             android:background="#FFFFFF"
             />
     </LinearLayout>
