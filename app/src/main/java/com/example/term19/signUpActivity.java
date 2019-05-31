@@ -30,6 +30,8 @@ public class signUpActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_sign_up);
 
+        FirebasePost.readDataFirebase();
+
 
         //UI 객체생성
         idText = findViewById(R.id.id);
@@ -61,7 +63,6 @@ public class signUpActivity extends Activity {
                     int score = 0;
 
                     FirebasePost data = new FirebasePost(id, pw, age, gender,score);
-                    FirebasePost.readDataFirebase();
 
                     // 중복제거하려했는데 안됨...
                     data.addDataFirebase();

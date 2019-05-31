@@ -15,9 +15,6 @@
         <activity
             android:name=".signUpActivity"
             android:theme="@android:style/Theme.Dialog" />
-        <activity
-            android:name=".signInActivity"
-            android:theme="@android:style/Theme.Dialog" />
         <activity android:name=".MainActivity"/>
 
         <activity android:name=".Splash"

@@ -41,6 +41,8 @@ public class FirebasePost {
         this.age = age;
         this.gender = gender;
         this.score = score;
+
+//        readDataFirebase();
     }
 
     public static void readDataFirebase(){
@@ -57,6 +59,7 @@ public class FirebasePost {
                     // Extract ID and PW
                     String dataID = ((HashMap<String, Object>)snapshot.getValue()).get("id").toString();
                     idList.add(dataID);
+
                 }
             }
 
@@ -68,6 +71,9 @@ public class FirebasePost {
     }
 
     public boolean addDataFirebase(){
+        Log.d("Message2", idList.toString());
+        Log.d("Message2", id);
+
         if(idList.contains(id)){
             return false; // duplicated ID
         }
