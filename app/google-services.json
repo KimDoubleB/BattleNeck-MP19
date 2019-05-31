@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1028180971376:android:e444c3605317eb06",
         "android_client_info": {
-          "package_name": "com.example.term19"
+          "package_name": "com.bappe.term19"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "1028180971376-tp2l7j1tkll5oje3ka0c5ghb6d0cqnbo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.term19",
+            "package_name": "com.bappe.term19",
             "certificate_hash": "24af4d0faaaa4856260fa166f7e9d96c6bced653"
           }
         },

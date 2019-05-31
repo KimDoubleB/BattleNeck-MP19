@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.term19">
+    package="com.bappe.term19">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,13 +11,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".MainHomeActivity" />
+        <activity android:name="com.bappe.term19.MainHomeActivity" />
         <activity
-            android:name=".signUpActivity"
+            android:name="com.bappe.term19.signUpActivity"
             android:theme="@android:style/Theme.Dialog" />
-        <activity android:name=".MainActivity"/>
+        <activity android:name="com.bappe.term19.MainActivity"/>
 
-        <activity android:name=".Splash"
+        <activity android:name="com.bappe.term19.Splash"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
