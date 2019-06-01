@@ -25,6 +25,8 @@ public class FirebasePost {
     public String gender;
     public int score;
     public static HashMap<String, String> users = new HashMap<>();
+    public static HashMap<String, Integer> userScores = new HashMap<>();
+
 
 
     public FirebasePost() {
@@ -55,9 +57,12 @@ public class FirebasePost {
                     // Extract ID and PW
                     String dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
                     String dataPW = ((HashMap<String, Object>) snapshot.getValue()).get("pw").toString();
+                    String dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
+
                     Log.d("Message", dataID + " " + dataPW);
 
                     users.put(dataID, dataPW);
+                    userScores.put(dataID, Integer.parseInt(dataScore));
                 }
             }
 

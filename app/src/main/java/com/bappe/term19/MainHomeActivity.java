@@ -35,7 +35,6 @@ public class MainHomeActivity extends AppCompatActivity {
     private TextView tv_roll;
 
     public ListView listview;
-    public HashMap<String, Integer> id_score; // rank sort data
 
     /*Used for Accelometer & Gyroscoper*/
     private SensorManager mSensorManager = null;
@@ -112,68 +111,73 @@ public class MainHomeActivity extends AppCompatActivity {
 
     }
 
-    // Tab view 2 function
-    public void setRanking() {
-        id_score = new HashMap<>();
+    public void setRanking(){
 
-        // Get a reference to our posts
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("id_list/");
+        FirebasePost.getUserData();
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        Iterator it = sortByValue(FirebasePost.userScores).iterator(); // sort by value
+
+        // ArrayAdapter for listview
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1){
+            // set text color of listview
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // All data in Firebase DB
-
-                String dataID, dataScore;
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    HashMap<String, Object> data = (HashMap<String, Object>) snapshot.getValue();
-                    /*
-                    //    this.id = id;
-                        this.pw = pw;
-                        this.age = age;
-                        this.gender = gender;
-                    //    this.score = score;
-                    */
-
-                    dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
-                    dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
-
-                    id_score.put(dataID, Integer.parseInt(dataScore));
-                }
-                Log.d("Message2", id_score.toString());
-                Iterator it = sortByValue(id_score).iterator(); // sort by value
-
-                // ArrayAdapter for listview
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1){
-                    // set text color of listview
-                    @Override
-                    public View getView(int position, View convertView, ViewGroup parent){
-                        View view = super.getView(position, convertView, parent);
-                        TextView tv = view.findViewById(android.R.id.text1);
-                        tv.setTextColor(Color.parseColor("#00D85A"));
-                        return view;
-                    }
-                };
-
-                while(it.hasNext()) {
-                    dataID  = (String) it.next();
-                    Log.d("Message2", "RANK " + dataID + " = " + id_score.get(dataID));
-                    String rankData = dataID + " " + id_score.get(dataID);
-                    adapter.add(rankData);
-                }
-
-                listview.setAdapter(adapter);
-
-
+            public View getView(int position, View convertView, ViewGroup parent){
+                View view = super.getView(position, convertView, parent);
+                TextView tv = view.findViewById(android.R.id.text1);
+                tv.setTextColor(Color.parseColor("#00D85A"));
+                return view;
             }
+        };
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+        while(it.hasNext()) {
+            String dataID  = (String) it.next();
+            Log.d("Message2", "RANK " + dataID + " = " + FirebasePost.userScores.get(dataID));
+            String rankData = dataID + " " + FirebasePost.userScores.get(dataID);
+            adapter.add(rankData);
+        }
 
+        listview.setAdapter(adapter);
     }
+//
+//    // Tab view 2 function
+//    public void setRanking() {
+//        id_score = new HashMap<>();
+//
+//        // Get a reference to our posts
+//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference ref = database.getReference("id_list/");
+//
+//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                // All data in Firebase DB
+//
+//                String dataID, dataScore;
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    HashMap<String, Object> data = (HashMap<String, Object>) snapshot.getValue();
+//                    /*
+//                    //    this.id = id;
+//                        this.pw = pw;
+//                        this.age = age;
+//                        this.gender = gender;
+//                    //    this.score = score;
+//                    */
+//
+//                    dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
+//                    dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
+//
+//                    id_score.put(dataID, Integer.parseInt(dataScore));
+//                }
+//                Log.d("Message2", id_score.toString());
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        });
+//
+//    }
 
 
 

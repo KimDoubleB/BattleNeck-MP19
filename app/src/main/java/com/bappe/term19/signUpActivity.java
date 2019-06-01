@@ -52,7 +52,7 @@ public class signUpActivity extends Activity {
 
                     // 중복 보호.
                     if(data.addDataFirebase()){
-                        finish();
+                            finish();
                     }
                     else{
                         Toast.makeText(getApplicationContext(), "ID is duplicated !", Toast.LENGTH_SHORT).show();
