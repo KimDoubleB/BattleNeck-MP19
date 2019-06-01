@@ -18,7 +18,8 @@
         <activity android:name="com.bappe.term19.MainActivity"/>
 
         <activity android:name="com.bappe.term19.Splash"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppFullScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -14,7 +14,8 @@ public class Splash extends Activity {
 
         Handler hd = new Handler();
         FirebasePost.getUserData();
-        hd.postDelayed(new splashhandler(), 900); // 1초 후에 hd handler 실행  3000ms = 3초
+        hd.postDelayed(new splashhandler(), 1600); // 1초 후에 hd handler 실행  3000ms = 3초
+
     }
 
     private class splashhandler implements Runnable{
