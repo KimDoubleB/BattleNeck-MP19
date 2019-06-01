@@ -19,9 +19,6 @@ public class signUpActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_sign_up);
 
-        FirebasePost.readDataFirebase();
-
-
         //UI 객체생성
         idText = findViewById(R.id.id);
         pwText = findViewById(R.id.pw);
@@ -53,17 +50,13 @@ public class signUpActivity extends Activity {
 
                     FirebasePost data = new FirebasePost(id, pw, age, gender,score);
 
-                    // 중복제거하려했는데 안됨...
-                    data.addDataFirebase();
-                    finish();
-
-                    //
-//                    if(!data.addDataFirebase()){
-//                        //액티비티(팝업) 닫기
-//                        finish();
-//                    }else{
-//                        Toast.makeText(getApplicationContext(), "ID is duplicated !", Toast.LENGTH_SHORT).show();
-//                    }
+                    // 중복 보호.
+                    if(data.addDataFirebase()){
+                        finish();
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "ID is duplicated !", Toast.LENGTH_SHORT).show();
+                    }
 
                 }
             }

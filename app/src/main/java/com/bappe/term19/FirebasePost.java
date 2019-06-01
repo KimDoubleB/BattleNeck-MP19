@@ -2,6 +2,7 @@ package com.bappe.term19;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,10 +24,10 @@ public class FirebasePost {
     public int age;
     public String gender;
     public int score;
-    public static HashSet<String> idList = new HashSet<>();
+    public static HashMap<String, String> users = new HashMap<>();
 
 
-    public FirebasePost(){
+    public FirebasePost() {
         // Default constructor required for calls to DataSnapshot.getValue(FirebasePost.class)
     }
 
@@ -36,25 +37,27 @@ public class FirebasePost {
         this.age = age;
         this.gender = gender;
         this.score = score;
-
-//        readDataFirebase();
     }
 
-    public static void readDataFirebase(){
-
-        // 중복제거를하려고 이렇게 했는데 안된다....
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
+    // get User data
+    public static void getUserData() {
+        // Get a reference to our posts
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("id_list/");
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // All data in Firebase DB
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    // Extract ID and PW
-                    String dataID = ((HashMap<String, Object>)snapshot.getValue()).get("id").toString();
-                    idList.add(dataID);
 
+
+                // All data in Firebase DB
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // Extract ID and PW
+                    String dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
+                    String dataPW = ((HashMap<String, Object>) snapshot.getValue()).get("pw").toString();
+                    Log.d("Message", dataID + " " + dataPW);
+
+                    users.put(dataID, dataPW);
                 }
             }
 
@@ -62,22 +65,21 @@ public class FirebasePost {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
     }
 
-    public boolean addDataFirebase(){
-        Log.d("Message2", idList.toString());
-        Log.d("Message2", id);
+    // add data to firebase dadtabase
+    public boolean addDataFirebase() {
+        FirebasePost.getUserData();
 
-        if(idList.contains(id)){
+        if (users.containsKey(id)) {
             return false; // duplicated ID
-        }
+        } else {
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("id_list/" + this.id);
-        Log.d("Message2", idList.toString());
-        myRef.setValue(this.toMap());
-        return true;
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("id_list/" + this.id);
+            myRef.setValue(this.toMap());
+            return true;
+        }
     }
 
     @Exclude

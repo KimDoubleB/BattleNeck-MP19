@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean isOK = false; // User is legitimate?
 
 
-    public static HashMap<String, String> users = new HashMap<>();
+//    public static HashMap<String, String> users = new HashMap<>();
 
 
     @Override
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseApp.initializeApp(this);
         applySharedPreference();
-        getUserData();
+        FirebasePost.getUserData();
 
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
                 id = idText.getText().toString();
                 pw = pwText.getText().toString();
 
-                if (users.containsKey(id)) {
-                    if (users.get(id).equals(pw)) {
+                if (FirebasePost.users.containsKey(id)) {
+                    if (FirebasePost.users.get(id).equals(pw)) {
                         // If user is legitimate user, finish()
                         sharedPreference();
                         Intent intent2 = new Intent(getApplicationContext(), MainHomeActivity.class);
@@ -86,13 +86,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, 1);
             }
         });
-
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        getUserData();
+        FirebasePost.getUserData();
+        //getUserData();
     }
 
     public void sharedPreference() {
@@ -113,31 +112,31 @@ public class MainActivity extends AppCompatActivity {
             pwText.setText(pw2);
         }
     }
-
-    public void getUserData() {
-        // Get a reference to our posts
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("id_list/");
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                // All data in Firebase DB
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    // Extract ID and PW
-                    String dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
-                    String dataPW = ((HashMap<String, Object>) snapshot.getValue()).get("pw").toString();
-                    Log.d("Message", dataID + " " + dataPW);
-
-                    users.put(dataID, dataPW);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-    }
+//
+//    public void getUserData() {
+//        // Get a reference to our posts
+//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference ref = database.getReference("id_list/");
+//
+//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//
+//                // All data in Firebase DB
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    // Extract ID and PW
+//                    String dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
+//                    String dataPW = ((HashMap<String, Object>) snapshot.getValue()).get("pw").toString();
+//                    Log.d("Message", dataID + " " + dataPW);
+//
+//                    users.put(dataID, dataPW);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//            }
+//        });
+//    }
 }
