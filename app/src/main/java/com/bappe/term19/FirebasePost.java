@@ -15,9 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-/**
- * Created by DowonYoon on 2017-07-11.
- */
 
 @IgnoreExtraProperties
 public class FirebasePost {
