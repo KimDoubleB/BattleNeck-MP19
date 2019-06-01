@@ -1,12 +1,13 @@
 package com.bappe.term19;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,24 +17,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class MainHomeActivity extends AppCompatActivity {
     private TextView tv_roll;
-
+    private TextView angle2;
+    public ToggleButton tb;
     public ListView listview;
 
     /*Used for Accelometer & Gyroscoper*/
@@ -58,6 +55,10 @@ public class MainHomeActivity extends AppCompatActivity {
     private boolean gyroRunning;
     private boolean accRunning;
 
+    // SharedPreference for user auto login
+    public SharedPreferences sh_Angle;
+    public SharedPreferences.Editor toEdit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +69,9 @@ public class MainHomeActivity extends AppCompatActivity {
         setRanking();
 
         // Tab 1
+        tb = findViewById(R.id.toggleBtn);
         tv_roll = findViewById(R.id.tv_roll);
+        angle2 = findViewById(R.id.angle);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         userSensorListner = new UserSensorListener();
         mGyroscopeSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -89,21 +92,59 @@ public class MainHomeActivity extends AppCompatActivity {
         ts2.setIndicator("Rank") ;
         tabHost1.addTab(ts2) ;
 
+        if(applySharedPreference() == 1){
+            tb.setChecked(true);
+            tb.setBackgroundDrawable(
+                    getResources().getDrawable(R.drawable.turtle_comfor)
+
+            );
+        }
+
+        tb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tb.isChecked()){
+                    // 실행
+                    sharedPreference(1);
+                    Toast.makeText(getApplicationContext(), "Service 시작", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainHomeActivity.this, MyService.class);
+                    startService(intent);
+                    tb.setBackgroundDrawable(
+                            getResources().getDrawable(R.drawable.turtle_comfor)
+
+                    );
+                }else{
+                    sharedPreference(0);
+                    Toast.makeText(getApplicationContext(), "Service 끝", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainHomeActivity.this, MyService.class);
+                    stopService(intent);
+                    tb.setBackgroundDrawable(
+                            getResources().getDrawable(R.drawable.turtle_sick)
+                    );
+                }
+            }
+        });
+
         // event listener
         findViewById(R.id.filter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /* 실행 중이지 않을 때 -> 실행 */
                 if (!running) {
+
                     running = true;
                     mSensorManager.registerListener(userSensorListner, mGyroscopeSensor, SensorManager.SENSOR_DELAY_UI);
                     mSensorManager.registerListener(userSensorListner, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+//                    getAngle();
+            //        angle2.setText(getAngle());
                 }
 
                 /* 실행 중일 때 -> 중지 */
                 else if (running) {
+                    // 중지
+
                     running = false;
-                    mSensorManager.unregisterListener(userSensorListner);
+                  //  mSensorManager.unregisterListener(userSensorListner);
 
                 }
             }
@@ -138,48 +179,6 @@ public class MainHomeActivity extends AppCompatActivity {
 
         listview.setAdapter(adapter);
     }
-//
-//    // Tab view 2 function
-//    public void setRanking() {
-//        id_score = new HashMap<>();
-//
-//        // Get a reference to our posts
-//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference ref = database.getReference("id_list/");
-//
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                // All data in Firebase DB
-//
-//                String dataID, dataScore;
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    HashMap<String, Object> data = (HashMap<String, Object>) snapshot.getValue();
-//                    /*
-//                    //    this.id = id;
-//                        this.pw = pw;
-//                        this.age = age;
-//                        this.gender = gender;
-//                    //    this.score = score;
-//                    */
-//
-//                    dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
-//                    dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
-//
-//                    id_score.put(dataID, Integer.parseInt(dataScore));
-//                }
-//                Log.d("Message2", id_score.toString());
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
-//
-//    }
-
-
 
     // Tab view 1 function
     /**
@@ -217,6 +216,38 @@ public class MainHomeActivity extends AppCompatActivity {
         tv_roll.setText("roll : " + roll);
 
     }
+
+    private SensorManager sm;
+    private Sensor oriSensor;
+    private SensorEventListener oriL;
+    private float oy;
+    public void getAngle(){
+        // 여기서 이제 센서의 값을 지속적으로 받아야 함.
+
+
+        sm = (SensorManager) getSystemService(SENSOR_SERVICE);    // SensorManager 인스턴스를 가져옴
+        oriSensor = sm.getDefaultSensor(Sensor.TYPE_ORIENTATION);    // 방향 센서
+
+        oriL = new SensorEventListener(){
+            @Override
+            public void onSensorChanged(SensorEvent event) {  // 방향 센서 값이 바뀔때마다 호출됨
+                //ox.setText(Float.toString(event.values[0]));
+                oy = event.values[1];  //y 값 출력
+                angle2.setText(String.valueOf(oy));
+                //oz.setText(Float.toString(event.values[2]));
+                if (oy < 0 && oy > -40) {
+
+            //        Log.i("SENSOR", "Orientation changed.");
+                }
+            }
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+        sm.registerListener(oriL, oriSensor, SensorManager.SENSOR_DELAY_NORMAL);
+      //  return String.valueOf(oy);
+//        Toast.makeText(this, String.valueOf(oy), Toast.LENGTH_SHORT).show();
+    }
+
 
     public class UserSensorListener implements SensorEventListener {
 
@@ -282,4 +313,25 @@ public class MainHomeActivity extends AppCompatActivity {
         return list;
     }
 
+
+    // 1: activate // 0: inactivate
+    public void sharedPreference(int num) {
+        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
+        toEdit = sh_Angle.edit();
+        toEdit.putInt("state", num);
+        toEdit.commit();
+    }
+
+    public int applySharedPreference() {
+        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
+        int isActivate;
+
+        if (sh_Angle != null && sh_Angle.contains("state")) {
+             isActivate = sh_Angle.getInt("state", 1);
+        }else{
+            isActivate = 0;
+        }
+
+        return isActivate;
+    }
 }

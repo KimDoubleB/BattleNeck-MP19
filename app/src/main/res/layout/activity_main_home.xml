@@ -45,6 +45,12 @@
                         android:textSize="20dp"
                         android:text="roll"
                         android:layout_gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/angle"
+                        android:textSize="20dp"
+                        android:layout_gravity="center"/>
                     <Button
                         android:id="@+id/filter"
                         android:layout_width="wrap_content"
@@ -53,6 +59,13 @@
                         android:layout_above="@+id/tv_roll"
                         android:layout_marginBottom="16dp"
                         android:layout_gravity="center"/>
+                    <ToggleButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/toggleBtn"
+                        android:text="ToggleButton"
+                        android:layout_gravity="center"
+                        android:background="@drawable/turtle_sick"/>
                 </LinearLayout>
 
                 <!-- 두 번째 페이지. content2 -->
