@@ -39,9 +39,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("Message2", String.valueOf(FirebasePost.isActive));
+        if(FirebasePost.isActive){
+            Intent intent = new Intent(this, MyService.class);
+            stopService(intent);
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        FirebasePost.isActive = false;
 
         signUp = findViewById(R.id.signUp);
         signIn = findViewById(R.id.signIn);

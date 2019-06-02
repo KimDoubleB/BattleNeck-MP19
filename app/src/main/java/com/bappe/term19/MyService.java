@@ -47,10 +47,9 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
         // 현재 아이디 가져오기
-       // id = (String)intent.getExtras().get("ID");
-      //  Log.d("MESSAGE", "rprt0  "+id);
+        // id = (String)intent.getExtras().get("ID");
+        //  Log.d("MESSAGE", "rprt0  "+id);
 
         vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -104,9 +103,9 @@ public class MyService extends Service {
 
     public void onDestroy() {
         Toast.makeText(MyService.this, "Service finishing", Toast.LENGTH_LONG).show();
-       // Notifi_M.cancel(1);
+        // Notifi_M.cancel(1);
         super.onDestroy();
-        thread.stopForever();
+//        thread.stopForever();
         thread = null;//쓰레기 값을 만들어서 빠르게 회수하라고 null을 넣어줌.
     }
 
@@ -114,7 +113,6 @@ public class MyService extends Service {
 
         @Override
         public void handleMessage(android.os.Message msg) {
-            //FirebasePost.getUserData();
             int data;
             if (oy < 0 && oy > -50) {
                 // 열려 있으면 안뜨게해야함.
@@ -123,8 +121,7 @@ public class MyService extends Service {
                 data = sharedPreference(-1);
                 vibrator.vibrate(1000);
 
-                Toast.makeText(MyService.this, "고개 들어라 거북이 된다~", Toast.LENGTH_SHORT).show();
-                //FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id)-1);
+               // Toast.makeText(MyService.this, "고개 들어라 거북이 된다~", Toast.LENGTH_SHORT).show();
                 Log.i("SENSOR", "Sensorvalue." + oy);
             }
             else{
@@ -153,19 +150,6 @@ public class MyService extends Service {
 
             return currentScore;
         }
-//
-//        public int applySharedPreference() {
-//            sh_Score = getSharedPreferences("Score", MODE_PRIVATE);
-//            int currentScore;
-//
-//            if (sh_Score != null && sh_Score.contains("score")) {
-//                currentScore = sh_Score.getInt("score", 1);
-//            }else{
-//                currentScore = 0;
-//            }
-//
-//            return currentScore;
-//        }
 
     }
 

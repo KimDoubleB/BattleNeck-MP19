@@ -26,7 +26,7 @@ public class FirebasePost {
     public int score;
     public static HashMap<String, String> users = new HashMap<>();
     public static HashMap<String, Integer> userScores = new HashMap<>();
-
+    public static boolean isActive;
 
     public FirebasePost() {
         // Default constructor required for calls to DataSnapshot.getValue(FirebasePost.class)

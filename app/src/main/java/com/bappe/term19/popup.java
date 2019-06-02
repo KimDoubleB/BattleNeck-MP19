@@ -18,14 +18,14 @@ public class popup extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         rec=new Bundle();
+
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         setContentView(R.layout.dialog);
         _popup=popup.this;
-
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this,R.style.DialogTheme);
         alertDialog = alertDialogBuilder.create();
+
         alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         if(alertDialog != null)
         {
@@ -36,16 +36,14 @@ public class popup extends Activity {
 
     }
     protected void onDestroy() {
-        dintent = new Intent(this,MainActivity.class);
+        //dintent = new Intent(this,MainActivity.class);
         super.onDestroy();
-
         if (alertDialog != null) {
             alertDialog.dismiss();
             alertDialog = null;
         }
     }
 }
-
 
 
 

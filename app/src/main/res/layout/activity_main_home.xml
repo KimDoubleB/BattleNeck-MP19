@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainHomeActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".MainHomeActivity">
 
     <TabHost
         android:id="@+id/tabHost1"
@@ -28,45 +27,83 @@
             <FrameLayout
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
                 <!-- 첫 번째 페이지. content1 -->
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/content1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent">
 
+
+                    <TextView
+                        android:id="@+id/tv_roll1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="40dp"
+                        android:gravity="center"
+                        android:text="Your posture"
+                        android:textSize="30dp" />
+
+                    <ImageView
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:id="@+id/image1"
+                        android:layout_width="200dp"
+                        android:layout_height="350dp"
+                        android:layout_below="@+id/tv_roll1"
+                        android:src="@drawable/right_posture"
+                        />
 
                     <TextView
                         android:id="@+id/tv_roll"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="20dp"
-                        android:text="roll"
-                        android:layout_gravity="center"/>
+                        android:layout_height="250dp"
+                        android:layout_below="@+id/tv_roll1"
+                        android:layout_alignTop="@+id/image1"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@+id/image1"
+                        android:gravity="center_vertical"
+                        android:text="90°"
+                        android:textSize="60dp" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/angle"
+                        android:id="@+id/phone"
+                        android:layout_below="@+id/image1"
+                        android:layout_centerHorizontal="true"
+                        android:text="Phone Status Now"
                         android:textSize="20dp"
-                        android:layout_gravity="center"/>
-                    <Button
-                        android:id="@+id/filter"
+                        />
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="filter"
-                        android:layout_above="@+id/tv_roll"
-                        android:layout_marginBottom="16dp"
-                        android:layout_gravity="center"/>
+                        android:id="@+id/phone_statues"
+                        android:layout_below="@+id/phone"
+                        android:layout_centerHorizontal="true"
+                        android:text="Running"
+                        android:textSize="17dp"
+                        android:layout_marginTop="18dp"
+                        />
+
+
+
                     <ToggleButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
                         android:id="@+id/toggleBtn"
-                        android:text="ToggleButton"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
                         android:layout_gravity="center"
-                        android:background="@drawable/turtle_sick"/>
-                </LinearLayout>
+                        android:layout_marginBottom="43dp"
+                        android:background="@drawable/roundbtn"
+                        android:textOff="DEACTIVATE"
+                        android:textOn="ACTIVATE"
+                        />
+
+                </RelativeLayout>
 
                 <!-- 두 번째 페이지. content2 -->
                 <LinearLayout
@@ -76,20 +113,18 @@
                     android:orientation="vertical">
 
                     <Button
+                        android:id="@+id/updateBtn"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/updateBtn"
-                        android:text="UPDATE"
-                        />
+                        android:text="UPDATE" />
 
                     <ListView
                         android:id="@+id/listview"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="#000000"
-                        android:focusable="false"
                         android:clickable="false"
-                        ></ListView>
+                        android:focusable="false"></ListView>
 
                 </LinearLayout>
             </FrameLayout>

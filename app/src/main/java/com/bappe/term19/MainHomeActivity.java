@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -30,10 +31,12 @@ import java.util.Map;
 
 public class MainHomeActivity extends AppCompatActivity {
     private TextView tv_roll;
-    private TextView angle2;
     public ToggleButton tb;
     public ListView listview;
     public Button updateBtn;
+
+    public ImageView imageView;
+    public TextView status;
 
     public String id;
 
@@ -68,6 +71,8 @@ public class MainHomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_home);
 
+        imageView = findViewById(R.id.image1);
+        status = findViewById(R.id.phone_statues);
         id = getIntent().getStringExtra("ID");
 
         // Tab 2
@@ -78,7 +83,6 @@ public class MainHomeActivity extends AppCompatActivity {
         // Tab 1
         tb = findViewById(R.id.toggleBtn);
         tv_roll = findViewById(R.id.tv_roll);
-        angle2 = findViewById(R.id.angle);
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         userSensorListner = new UserSensorListener();
         mGyroscopeSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -112,56 +116,33 @@ public class MainHomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (tb.isChecked()) {
                     // 실행
-                    //       sharedPreference(1);
+                    mSensorManager.registerListener(userSensorListner, mGyroscopeSensor, SensorManager.SENSOR_DELAY_UI);
+                    mSensorManager.registerListener(userSensorListner, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+
                     Toast.makeText(getApplicationContext(), "Service 시작", Toast.LENGTH_SHORT).show();
+
+                    FirebasePost.isActive = true;
+
                     Intent intent = new Intent(MainHomeActivity.this, MyService.class);
                     intent.putExtra("ID", id); // 서비스로 현재 아이디 넘겨줌.
                     startService(intent);
                     tb.setBackgroundDrawable(
-                            getResources().getDrawable(R.drawable.turtle_comfor)
-
+                            getResources().getDrawable(R.drawable.roundbtn1)
                     );
                 } else {
-                    //    sharedPreference(0);
+                    mSensorManager.unregisterListener(userSensorListner);
+
                     Toast.makeText(getApplicationContext(), "Service 끝", Toast.LENGTH_SHORT).show();
+
                     Intent intent = new Intent(MainHomeActivity.this, MyService.class);
                     stopService(intent);
+
                     tb.setBackgroundDrawable(
-                            getResources().getDrawable(R.drawable.turtle_sick)
+                            getResources().getDrawable(R.drawable.roundbtn)
                     );
                 }
             }
         });
-
-        // event listener
-        findViewById(R.id.filter).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /* 실행 중이지 않을 때 -> 실행 */
-                FirebasePost.getUserData();
-                if (!running) {
-                    // ID 받아오는 작업. ==> Service에 넣기
-                    FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id) + 5);
-
-
-                    running = true;
-                    mSensorManager.registerListener(userSensorListner, mGyroscopeSensor, SensorManager.SENSOR_DELAY_UI);
-                    mSensorManager.registerListener(userSensorListner, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
-//                    getAngle();
-                    //        angle2.setText(getAngle());
-                }
-
-                /* 실행 중일 때 -> 중지 */
-                else if (running) {
-                    // 중지
-
-                    running = false;
-                    //  mSensorManager.unregisterListener(userSensorListner);
-
-                }
-            }
-        });
-
 
         // Update button
         updateBtn.setOnClickListener(new View.OnClickListener() {
@@ -188,6 +169,13 @@ public class MainHomeActivity extends AppCompatActivity {
                 setRanking();
             }
         });
+    }
+
+    @Override
+    protected void onUserLeaveHint(){
+
+        super.onUserLeaveHint();
+       // finish();
     }
 
     public void setRanking() {
@@ -252,43 +240,19 @@ public class MainHomeActivity extends AppCompatActivity {
         temp = (1 / a) * (mAccRoll - roll) + mGyroValues[0];
         roll = roll + (temp * dt);
 
-        tv_roll.setText("roll : " + roll);
+        tv_roll.setText("" + (int) roll + "°");
+        status.setText("Running");
+        if (roll < 60) {
+            imageView.setImageResource(R.drawable.bad_posture);
+        }
+        else{
+            imageView.setImageResource(R.drawable.right_posture);
+        }
+
+        if(roll>-2 && roll<2) status.setText("\"Flatten\"");
+        else status.setText("\"Running\"");
 
     }
-
-    private SensorManager sm;
-    private Sensor oriSensor;
-    private SensorEventListener oriL;
-    private float oy;
-
-    public void getAngle() {
-        // 여기서 이제 센서의 값을 지속적으로 받아야 함.
-
-
-        sm = (SensorManager) getSystemService(SENSOR_SERVICE);    // SensorManager 인스턴스를 가져옴
-        oriSensor = sm.getDefaultSensor(Sensor.TYPE_ORIENTATION);    // 방향 센서
-
-        oriL = new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent event) {  // 방향 센서 값이 바뀔때마다 호출됨
-                //ox.setText(Float.toString(event.values[0]));
-                oy = event.values[1];  //y 값 출력
-                angle2.setText(String.valueOf(oy));
-                //oz.setText(Float.toString(event.values[2]));
-                if (oy < 0 && oy > -40) {
-
-                    //        Log.i("SENSOR", "Orientation changed.");
-                }
-            }
-
-            public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            }
-        };
-        sm.registerListener(oriL, oriSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        //  return String.valueOf(oy);
-//        Toast.makeText(this, String.valueOf(oy), Toast.LENGTH_SHORT).show();
-    }
-
 
     public class UserSensorListener implements SensorEventListener {
 
@@ -336,6 +300,7 @@ public class MainHomeActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
     }
+
 
     // sort function by value
     public static List sortByValue(final Map map) {
