@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ public class MainHomeActivity extends AppCompatActivity {
     private TextView angle2;
     public ToggleButton tb;
     public ListView listview;
+    public Button updateBtn;
 
     public String id;
 
@@ -57,9 +59,9 @@ public class MainHomeActivity extends AppCompatActivity {
     private boolean gyroRunning;
     private boolean accRunning;
 
-//    // SharedPreference for user auto login
-//    public SharedPreferences sh_Angle;
-//    public SharedPreferences.Editor toEdit;
+    //    // SharedPreference for user auto login
+    public SharedPreferences sh_Score;
+    public SharedPreferences.Editor toEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class MainHomeActivity extends AppCompatActivity {
 
         // Tab 2
         listview = findViewById(R.id.listview);
+        updateBtn = findViewById(R.id.updateBtn);
         setRanking();
 
         // Tab 1
@@ -81,20 +84,20 @@ public class MainHomeActivity extends AppCompatActivity {
         mGyroscopeSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1) ;
+        TabHost tabHost1 = (TabHost) findViewById(R.id.tabHost1);
         tabHost1.setup();
 
         // 첫 번째 Tab. (탭 표시 텍스트:"TAB 1"), (페이지 뷰:"content1")
-        TabHost.TabSpec ts1 = tabHost1.newTabSpec("Tab Spec 1") ;
-        ts1.setContent(R.id.content1) ;
-        ts1.setIndicator("Data") ;
-        tabHost1.addTab(ts1)  ;
+        TabHost.TabSpec ts1 = tabHost1.newTabSpec("Tab Spec 1");
+        ts1.setContent(R.id.content1);
+        ts1.setIndicator("Data");
+        tabHost1.addTab(ts1);
 
         // 두 번째 Tab. (탭 표시 텍스트:"TAB 2"), (페이지 뷰:"content2")
-        TabHost.TabSpec ts2 = tabHost1.newTabSpec("Tab Spec 2") ;
-        ts2.setContent(R.id.content2) ;
-        ts2.setIndicator("Rank") ;
-        tabHost1.addTab(ts2) ;
+        TabHost.TabSpec ts2 = tabHost1.newTabSpec("Tab Spec 2");
+        ts2.setContent(R.id.content2);
+        ts2.setIndicator("Rank");
+        tabHost1.addTab(ts2);
 
 //        if(applySharedPreference() == 1){
 //            tb.setChecked(true);
@@ -107,9 +110,9 @@ public class MainHomeActivity extends AppCompatActivity {
         tb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(tb.isChecked()){
+                if (tb.isChecked()) {
                     // 실행
-             //       sharedPreference(1);
+                    //       sharedPreference(1);
                     Toast.makeText(getApplicationContext(), "Service 시작", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainHomeActivity.this, MyService.class);
                     intent.putExtra("ID", id); // 서비스로 현재 아이디 넘겨줌.
@@ -118,8 +121,8 @@ public class MainHomeActivity extends AppCompatActivity {
                             getResources().getDrawable(R.drawable.turtle_comfor)
 
                     );
-                }else{
-                //    sharedPreference(0);
+                } else {
+                    //    sharedPreference(0);
                     Toast.makeText(getApplicationContext(), "Service 끝", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainHomeActivity.this, MyService.class);
                     stopService(intent);
@@ -138,14 +141,14 @@ public class MainHomeActivity extends AppCompatActivity {
                 FirebasePost.getUserData();
                 if (!running) {
                     // ID 받아오는 작업. ==> Service에 넣기
-                    FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id)+5);
+                    FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id) + 5);
 
 
                     running = true;
                     mSensorManager.registerListener(userSensorListner, mGyroscopeSensor, SensorManager.SENSOR_DELAY_UI);
                     mSensorManager.registerListener(userSensorListner, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 //                    getAngle();
-            //        angle2.setText(getAngle());
+                    //        angle2.setText(getAngle());
                 }
 
                 /* 실행 중일 때 -> 중지 */
@@ -153,25 +156,51 @@ public class MainHomeActivity extends AppCompatActivity {
                     // 중지
 
                     running = false;
-                  //  mSensorManager.unregisterListener(userSensorListner);
+                    //  mSensorManager.unregisterListener(userSensorListner);
 
                 }
             }
         });
 
+
+        // Update button
+        updateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sh_Score = getSharedPreferences("Score", MODE_PRIVATE);
+                FirebasePost.getUserData();
+
+                int currentScore;
+
+                if (sh_Score != null && sh_Score.contains("score")) {
+                    currentScore = sh_Score.getInt("score", 0);
+                }else{
+                    currentScore = 0;
+                }
+
+                FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id) + currentScore);
+
+                toEdit = sh_Score.edit();
+                toEdit.putInt("score", 0);
+                toEdit.commit();
+
+                setRanking();
+                setRanking();
+            }
+        });
     }
 
-    public void setRanking(){
+    public void setRanking() {
 
         FirebasePost.getUserData();
 
         Iterator it = sortByValue(FirebasePost.userScores).iterator(); // sort by value
 
         // ArrayAdapter for listview
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1){
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1) {
             // set text color of listview
             @Override
-            public View getView(int position, View convertView, ViewGroup parent){
+            public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
                 TextView tv = view.findViewById(android.R.id.text1);
                 tv.setTextColor(Color.parseColor("#00D85A"));
@@ -179,8 +208,8 @@ public class MainHomeActivity extends AppCompatActivity {
             }
         };
 
-        while(it.hasNext()) {
-            String dataID  = (String) it.next();
+        while (it.hasNext()) {
+            String dataID = (String) it.next();
             Log.d("Message2", "RANK " + dataID + " = " + FirebasePost.userScores.get(dataID));
             String rankData = dataID + " " + FirebasePost.userScores.get(dataID);
             adapter.add(rankData);
@@ -190,6 +219,7 @@ public class MainHomeActivity extends AppCompatActivity {
     }
 
     // Tab view 1 function
+
     /**
      * 1차 상보필터 적용 메서드
      */
@@ -230,14 +260,15 @@ public class MainHomeActivity extends AppCompatActivity {
     private Sensor oriSensor;
     private SensorEventListener oriL;
     private float oy;
-    public void getAngle(){
+
+    public void getAngle() {
         // 여기서 이제 센서의 값을 지속적으로 받아야 함.
 
 
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);    // SensorManager 인스턴스를 가져옴
         oriSensor = sm.getDefaultSensor(Sensor.TYPE_ORIENTATION);    // 방향 센서
 
-        oriL = new SensorEventListener(){
+        oriL = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {  // 방향 센서 값이 바뀔때마다 호출됨
                 //ox.setText(Float.toString(event.values[0]));
@@ -246,14 +277,15 @@ public class MainHomeActivity extends AppCompatActivity {
                 //oz.setText(Float.toString(event.values[2]));
                 if (oy < 0 && oy > -40) {
 
-            //        Log.i("SENSOR", "Orientation changed.");
+                    //        Log.i("SENSOR", "Orientation changed.");
                 }
             }
+
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
         };
         sm.registerListener(oriL, oriSensor, SensorManager.SENSOR_DELAY_NORMAL);
-      //  return String.valueOf(oy);
+        //  return String.valueOf(oy);
 //        Toast.makeText(this, String.valueOf(oy), Toast.LENGTH_SHORT).show();
     }
 
@@ -311,8 +343,8 @@ public class MainHomeActivity extends AppCompatActivity {
         List<String> list = new ArrayList();
 
         list.addAll(map.keySet());
-        Collections.sort(list,new Comparator() {
-            public int compare(Object o1,Object o2) {
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
                 Object v1 = map.get(o1);
                 Object v2 = map.get(o2);
                 return ((Comparable) v2).compareTo(v1);
@@ -321,26 +353,4 @@ public class MainHomeActivity extends AppCompatActivity {
 //        Collections.reverse(list); // 주석시 오름차순
         return list;
     }
-//
-//
-//    // 1: activate // 0: inactivate
-//    public void sharedPreference(int num) {
-//        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
-//        toEdit = sh_Angle.edit();
-//        toEdit.putInt("state", num);
-//        toEdit.commit();
-//    }
-//
-//    public int applySharedPreference() {
-//        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
-//        int isActivate;
-//
-//        if (sh_Angle != null && sh_Angle.contains("state")) {
-//             isActivate = sh_Angle.getInt("state", 1);
-//        }else{
-//            isActivate = 0;
-//        }
-//
-//        return isActivate;
-//    }
 }
