@@ -28,7 +28,6 @@ public class FirebasePost {
     public static HashMap<String, Integer> userScores = new HashMap<>();
 
 
-
     public FirebasePost() {
         // Default constructor required for calls to DataSnapshot.getValue(FirebasePost.class)
     }
@@ -39,6 +38,7 @@ public class FirebasePost {
         this.age = age;
         this.gender = gender;
         this.score = score;
+
     }
 
     // get User data
@@ -59,7 +59,7 @@ public class FirebasePost {
                     String dataPW = ((HashMap<String, Object>) snapshot.getValue()).get("pw").toString();
                     String dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
 
-                    Log.d("Message", dataID + " " + dataPW);
+                   // Log.d("Message", dataID + " " + dataPW);
 
                     users.put(dataID, dataPW);
                     userScores.put(dataID, Integer.parseInt(dataScore));
@@ -96,5 +96,13 @@ public class FirebasePost {
         result.put("gender", gender);
         result.put("score", score);
         return result;
+    }
+
+    public static void writeNewPost(String userId, int score) {
+        DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("id_list/" + userId + "/score/");
+        //   String key = mDatabase.child("posats").push().getKey();
+        mDatabase.setValue(score);
+
+        //   FirebasePost post = new FirebasePost(id, pw, age, gender, score);
     }
 }

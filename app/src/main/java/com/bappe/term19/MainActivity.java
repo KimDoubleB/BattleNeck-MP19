@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                         // If user is legitimate user, finish()
                         sharedPreference();
                         Intent intent2 = new Intent(getApplicationContext(), MainHomeActivity.class);
+                        intent2.putExtra("ID", id);
                         startActivity(intent2);
                         finish();
                     } else {

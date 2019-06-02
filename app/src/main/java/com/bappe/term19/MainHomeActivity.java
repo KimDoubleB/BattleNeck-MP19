@@ -33,6 +33,8 @@ public class MainHomeActivity extends AppCompatActivity {
     public ToggleButton tb;
     public ListView listview;
 
+    public String id;
+
     /*Used for Accelometer & Gyroscoper*/
     private SensorManager mSensorManager = null;
     private UserSensorListener userSensorListner;
@@ -55,14 +57,16 @@ public class MainHomeActivity extends AppCompatActivity {
     private boolean gyroRunning;
     private boolean accRunning;
 
-    // SharedPreference for user auto login
-    public SharedPreferences sh_Angle;
-    public SharedPreferences.Editor toEdit;
+//    // SharedPreference for user auto login
+//    public SharedPreferences sh_Angle;
+//    public SharedPreferences.Editor toEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_home);
+
+        id = getIntent().getStringExtra("ID");
 
         // Tab 2
         listview = findViewById(R.id.listview);
@@ -92,29 +96,30 @@ public class MainHomeActivity extends AppCompatActivity {
         ts2.setIndicator("Rank") ;
         tabHost1.addTab(ts2) ;
 
-        if(applySharedPreference() == 1){
-            tb.setChecked(true);
-            tb.setBackgroundDrawable(
-                    getResources().getDrawable(R.drawable.turtle_comfor)
-
-            );
-        }
+//        if(applySharedPreference() == 1){
+//            tb.setChecked(true);
+//            tb.setBackgroundDrawable(
+//                    getResources().getDrawable(R.drawable.turtle_comfor)
+//
+//            );
+//        }
 
         tb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(tb.isChecked()){
                     // 실행
-                    sharedPreference(1);
+             //       sharedPreference(1);
                     Toast.makeText(getApplicationContext(), "Service 시작", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainHomeActivity.this, MyService.class);
+                    intent.putExtra("ID", id); // 서비스로 현재 아이디 넘겨줌.
                     startService(intent);
                     tb.setBackgroundDrawable(
                             getResources().getDrawable(R.drawable.turtle_comfor)
 
                     );
                 }else{
-                    sharedPreference(0);
+                //    sharedPreference(0);
                     Toast.makeText(getApplicationContext(), "Service 끝", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainHomeActivity.this, MyService.class);
                     stopService(intent);
@@ -130,7 +135,11 @@ public class MainHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /* 실행 중이지 않을 때 -> 실행 */
+                FirebasePost.getUserData();
                 if (!running) {
+                    // ID 받아오는 작업. ==> Service에 넣기
+                    FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id)+5);
+
 
                     running = true;
                     mSensorManager.registerListener(userSensorListner, mGyroscopeSensor, SensorManager.SENSOR_DELAY_UI);
@@ -312,26 +321,26 @@ public class MainHomeActivity extends AppCompatActivity {
 //        Collections.reverse(list); // 주석시 오름차순
         return list;
     }
-
-
-    // 1: activate // 0: inactivate
-    public void sharedPreference(int num) {
-        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
-        toEdit = sh_Angle.edit();
-        toEdit.putInt("state", num);
-        toEdit.commit();
-    }
-
-    public int applySharedPreference() {
-        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
-        int isActivate;
-
-        if (sh_Angle != null && sh_Angle.contains("state")) {
-             isActivate = sh_Angle.getInt("state", 1);
-        }else{
-            isActivate = 0;
-        }
-
-        return isActivate;
-    }
+//
+//
+//    // 1: activate // 0: inactivate
+//    public void sharedPreference(int num) {
+//        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
+//        toEdit = sh_Angle.edit();
+//        toEdit.putInt("state", num);
+//        toEdit.commit();
+//    }
+//
+//    public int applySharedPreference() {
+//        sh_Angle = getSharedPreferences("Run angle", MODE_PRIVATE);
+//        int isActivate;
+//
+//        if (sh_Angle != null && sh_Angle.contains("state")) {
+//             isActivate = sh_Angle.getInt("state", 1);
+//        }else{
+//            isActivate = 0;
+//        }
+//
+//        return isActivate;
+//    }
 }
