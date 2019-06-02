@@ -22,7 +22,7 @@ public class ServiceThread extends Thread {
         while (isRun) {
             handler.sendEmptyMessage(0);    // 핸들러 호출
             try {
-                Thread.sleep(4500);
+                Thread.sleep(3000);
                 popup p=(popup)popup._popup;
                 if(p!=null)
                 {

@@ -62,7 +62,7 @@ public class MyService extends Service {
             Notifi = new Notification.Builder(this, CHANNEL_ID)
                     .setContentTitle("Battle neck")
                     .setContentText("Right posture running")
-                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setSmallIcon(R.drawable.splash)
                     .setContentIntent(pendingIntent)
                     .build();
         }
@@ -114,7 +114,7 @@ public class MyService extends Service {
         @Override
         public void handleMessage(android.os.Message msg) {
             int data;
-            if (oy < 0 && oy > -50) {
+            if (oy < -5 && oy > -50) {
                 // 열려 있으면 안뜨게해야함.
                 startActivity(dialogintent);
 
@@ -125,8 +125,6 @@ public class MyService extends Service {
                 Log.i("SENSOR", "Sensorvalue." + oy);
             }
             else{
-
-
                 data = sharedPreference(5);
                 //                //FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id)+5);
             }
