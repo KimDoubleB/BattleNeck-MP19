@@ -22,6 +22,9 @@ import android.widget.Toast;
 
 import static com.bappe.term19.App.CHANNEL_ID;
 
+// Press button from main to start foreground service.
+// It implemented a immortal service.
+
 public class MyService extends Service {
     Intent dialogintent;
     NotificationManager Notifi_M;
@@ -32,7 +35,7 @@ public class MyService extends Service {
     private SensorEventListener oriL;
     private float oy, ox, oz;
 
-    // 진동
+    // Vibration Variable
     public Vibrator vibrator;
 
     //public String id;
@@ -46,18 +49,23 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(!FirebasePost.isActive){
+            this.onDestroy();
+        }
 
-        // 현재 아이디 가져오기
+        //  Get current ID
         // id = (String)intent.getExtras().get("ID");
         //  Log.d("MESSAGE", "rprt0  "+id);
 
         vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
 
+        // Create intents for alerts.
         Intent intent1 = new Intent(MyService.this, MainActivity.class);
+        // If you press notification, Pendingintent will work.
         PendingIntent pendingIntent = PendingIntent.getActivity(MyService.this, 0, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // time = score 하면 됨.
 
+        // The current version check version can only be run on Oreo or higher.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notifi = new Notification.Builder(this, CHANNEL_ID)
                     .setContentTitle("Battle neck")
@@ -71,67 +79,79 @@ public class MyService extends Service {
         Notifi_M.notify(1, Notifi);
 
 
-        // thread 호출
+        // Create objects with a handle at the same time as the thread.
         myServiceHandler handler = new myServiceHandler();
+
+        // Call thread when service is started
         thread = new ServiceThread(handler);
         thread.start();
 
-        // 화면가리기용 intent 연결
+        // Connecting with intents for screen blocks
         dialogintent =new Intent(this,popup.class);
-        dialogintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//이미지 액티비티 띄우는 곳곳
+        // The place where the image activity is displayed.
+        dialogintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-
-        sm = (SensorManager) getSystemService(SENSOR_SERVICE);    // SensorManager 인스턴스를 가져옴
-        oriSensor = sm.getDefaultSensor(Sensor.TYPE_ORIENTATION);    // 방향 센서
+        // Import Sensormanager instance
+        sm = (SensorManager) getSystemService(SENSOR_SERVICE);
+        // Direction sensor
+        oriSensor = sm.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        // Continue to check the value of the sensor changing through the SensorEventListener
         oriL = new SensorEventListener() {
             @Override
-            public void onSensorChanged(SensorEvent event) {  // 방향 센서 값이 바뀔때마다 호출됨
+            public void onSensorChanged(SensorEvent event) {  // Called whenever direction sensor value changes.
                 //ox.setText(Float.toString(event.values[0]));
-                oy = event.values[1];  //y 값 출력
+                oy = event.values[1];  // Y direction
                 Log.i("SENSOR", "VALUE." + oy);
             }
 
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
             }
         };
+        // Delay settings for the sensor. This will result in a lower value to the riser
         sm.registerListener(oriL, oriSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        //return START_STICKY;
+
+        // Recreation and onStartCommand() Call (null intent)
         return START_STICKY;
     }
 
-    //서비스가 종료될 때 할 작업
 
+    // Operation of the destroy function at the end of the service.
     public void onDestroy() {
         Toast.makeText(MyService.this, "Service finishing", Toast.LENGTH_LONG).show();
         // Notifi_M.cancel(1);
         super.onDestroy();
-//        thread.stopForever();
-        thread = null;//쓰레기 값을 만들어서 빠르게 회수하라고 null을 넣어줌.
+        thread.stopForever();
+        thread = null;
     }
 
+    // Handler function to process values received from threads.
     class myServiceHandler extends Handler {
 
         @Override
         public void handleMessage(android.os.Message msg) {
             int data;
-            if (oy < -5 && oy > -50) {
-                // 열려 있으면 안뜨게해야함.
+            // If the angle is between 5 and 50 degrees, perform the corresponding function.
+            if (oy < -5 && oy > -60) {
+                // Run window for alerts.
                 startActivity(dialogintent);
 
+                // Having information for the ranking system.
                 data = sharedPreference(-1);
+                // Vibrating
                 vibrator.vibrate(1000);
 
-               // Toast.makeText(MyService.this, "고개 들어라 거북이 된다~", Toast.LENGTH_SHORT).show();
                 Log.i("SENSOR", "Sensorvalue." + oy);
             }
             else{
+                // +5 for correct positioning score
                 data = sharedPreference(5);
-                //                //FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id)+5);
+                //FirebasePost.writeNewPost(id, FirebasePost.userScores.get(id)+5);
             }
             Log.d("Message", "value: " + data);
 
         }
 
+        // Use sharedpreference for storing ranking data.
         public int sharedPreference(int num) {
             sh_Score = getSharedPreferences("Score", MODE_PRIVATE);
             int currentScore;
@@ -150,8 +170,5 @@ public class MyService extends Service {
         }
 
     }
-
-    //
-//
 
 }

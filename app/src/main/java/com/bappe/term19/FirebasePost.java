@@ -24,6 +24,8 @@ public class FirebasePost {
     public int age;
     public String gender;
     public int score;
+
+    // useful information for application
     public static HashMap<String, String> users = new HashMap<>();
     public static HashMap<String, Integer> userScores = new HashMap<>();
     public static boolean isActive;
@@ -32,6 +34,7 @@ public class FirebasePost {
         // Default constructor required for calls to DataSnapshot.getValue(FirebasePost.class)
     }
 
+    // constructor and get data from user
     public FirebasePost(String id, String pw, int age, String gender, int score) {
         this.id = id;
         this.pw = pw;
@@ -59,8 +62,8 @@ public class FirebasePost {
                     String dataPW = ((HashMap<String, Object>) snapshot.getValue()).get("pw").toString();
                     String dataScore = ((HashMap<String, Object>) snapshot.getValue()).get("score").toString();
 
-                   // Log.d("Message", dataID + " " + dataPW);
-
+                    // get the data from firebase Realtime DB
+                    // and store in FirebasePost class variable
                     users.put(dataID, dataPW);
                     userScores.put(dataID, Integer.parseInt(dataScore));
                 }
@@ -87,6 +90,7 @@ public class FirebasePost {
         }
     }
 
+    // Mapping the information
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -98,11 +102,9 @@ public class FirebasePost {
         return result;
     }
 
+    // update the data in Firebase realtime DB
     public static void writeNewPost(String userId, int score) {
         DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("id_list/" + userId + "/score/");
-        //   String key = mDatabase.child("posats").push().getKey();
         mDatabase.setValue(score);
-
-        //   FirebasePost post = new FirebasePost(id, pw, age, gender, score);
     }
 }

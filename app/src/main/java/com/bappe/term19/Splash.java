@@ -14,20 +14,20 @@ public class Splash extends Activity {
 
         Handler hd = new Handler();
         FirebasePost.getUserData();
-        hd.postDelayed(new splashhandler(), 1600); // 1초 후에 hd handler 실행  3000ms = 3초
+        hd.postDelayed(new splashhandler(), 1600); // run hd handler in 1.6 second
 
     }
 
     private class splashhandler implements Runnable{
         public void run(){
-            startActivity(new Intent(getApplication(), MainActivity.class)); //로딩이 끝난 후, ChoiceFunction 이동
-            Splash.this.finish(); // 로딩페이지 Activity stack에서 제거
+            startActivity(new Intent(getApplication(), MainActivity.class)); // After loading, move to ChoiceFunction
+            Splash.this.finish(); // Remove from loading page Activity stack
         }
     }
 
     @Override
     public void onBackPressed() {
-        //초반 플래시 화면에서 넘어갈때 뒤로가기 버튼 못누르게 함
+        // Don't allows the user to press the back button when moving from the initial flash screen
     }
 
 }

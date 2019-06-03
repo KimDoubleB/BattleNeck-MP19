@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private Button signUp, signIn;
     private EditText idText, pwText;
 
+    // id and password
     public String id, pw;
 
     // SharedPreference for user auto login
@@ -34,42 +35,48 @@ public class MainActivity extends AppCompatActivity {
     public boolean isOK = false; // User is legitimate?
 
 
-//    public static HashMap<String, String> users = new HashMap<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("Message2", String.valueOf(FirebasePost.isActive));
+
+        // if neck tracking service is active?
         if(FirebasePost.isActive){
+            // destroy service for protecting duplicate service
             Intent intent = new Intent(this, MyService.class);
             stopService(intent);
+            FirebasePost.isActive = false;
+            ServiceThread.stopForever();
         }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FirebasePost.isActive = false;
+        FirebasePost.isActive = false;  // set inactive service
 
         signUp = findViewById(R.id.signUp);
         signIn = findViewById(R.id.signIn);
         idText = findViewById(R.id.id);
         pwText = findViewById(R.id.pw);
 
+        // Database initialize
         FirebaseApp.initializeApp(this);
-        applySharedPreference();
+        // get user data from firebase realtime database
         FirebasePost.getUserData();
 
+        // get sharedPreference data (if there is...)
+        applySharedPreference();
+        // sign in buttion
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //데이터 전달하기
                 id = idText.getText().toString();
                 pw = pwText.getText().toString();
 
+                // Check user id & password
                 if (FirebasePost.users.containsKey(id)) {
                     if (FirebasePost.users.get(id).equals(pw)) {
-                        // If user is legitimate user, finish()
-                        sharedPreference();
+                        // If user is legitimate user,
+                        sharedPreference(); // store in sharedPreference
                         Intent intent2 = new Intent(getApplicationContext(), MainHomeActivity.class);
                         intent2.putExtra("ID", id);
                         startActivity(intent2);
@@ -84,12 +91,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // 회원가입
+        // Sign up button
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                // Sign up intent
                 Intent intent = new Intent(getApplicationContext(), signUpActivity.class);
-                //             intent.putExtra("data", "Test Popup");
                 startActivityForResult(intent, 1);
             }
         });
@@ -97,11 +105,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // get sharedPreference data (if there is...)
         FirebasePost.getUserData();
-        //getUserData();
     }
 
     public void sharedPreference() {
+        // store id & pw info in sharedPreference
         sh_UserInfo = getSharedPreferences("Login Credentials", MODE_PRIVATE);
         toEdit = sh_UserInfo.edit();
         toEdit.putString("UserId", id);
@@ -110,8 +119,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void applySharedPreference() {
+        // get data in sharedPrference
         sh_UserInfo = getSharedPreferences("Login Credentials", MODE_PRIVATE);
 
+        // if there is....
         if (sh_UserInfo != null && sh_UserInfo.contains("UserId")) {
             String id2 = sh_UserInfo.getString("UserId", "Default");
             idText.setText(id2);
@@ -119,31 +130,4 @@ public class MainActivity extends AppCompatActivity {
             pwText.setText(pw2);
         }
     }
-//
-//    public void getUserData() {
-//        // Get a reference to our posts
-//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference ref = database.getReference("id_list/");
-//
-//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//
-//                // All data in Firebase DB
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    // Extract ID and PW
-//                    String dataID = ((HashMap<String, Object>) snapshot.getValue()).get("id").toString();
-//                    String dataPW = ((HashMap<String, Object>) snapshot.getValue()).get("pw").toString();
-//                    Log.d("Message", dataID + " " + dataPW);
-//
-//                    users.put(dataID, dataPW);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//            }
-//        });
-//    }
 }

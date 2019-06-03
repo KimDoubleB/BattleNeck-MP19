@@ -19,13 +19,14 @@ public class signUpActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_sign_up);
 
-        //UI 객체생성
+        // widget
         idText = findViewById(R.id.id);
         pwText = findViewById(R.id.pw);
         genderText = findViewById(R.id.gender);
         ageText = findViewById(R.id.age);
         OkBtn = findViewById(R.id.okButton);
 
+        // Sign up button
         OkBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -50,8 +51,9 @@ public class signUpActivity extends Activity {
 
                     FirebasePost data = new FirebasePost(id, pw, age, gender,score);
 
-                    // 중복 보호.
+                    // protect duplicated data
                     if(data.addDataFirebase()){
+                        // if it is OK? , finish
                             finish();
                     }
                     else{
@@ -68,7 +70,7 @@ public class signUpActivity extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //바깥레이어 클릭시 안닫히게
+        // Do not close when clicking outer layer
         if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
             return false;
         }
@@ -80,6 +82,7 @@ public class signUpActivity extends Activity {
         finish();
     }
 
+    // check integer
     public boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
